@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
  */
 public class Seam_Carver {
     public static void main(String argc[]) throws IOException {
-    	//FILL IN YOUR INFORMATIONS BEFORE STARTING
+    	//<-----FILL IN YOUR INFORMATION BEFORE STARTING ----->
         //______________________________________________________________________________
         //Image to be rescaled
         BufferedImage imgIn = ImageIO.read(new File("landscape.jpg"));
@@ -88,13 +88,11 @@ public class Seam_Carver {
     private static int stepCost(BufferedImage imgIn, int x1, int y1, int x2, int y2) {
         int to = imgIn.getRGB(x1, y1);
         int from = imgIn.getRGB(x2, y2);
-
         return ((x1 < imgIn.getWidth() - 2 ? colorRGBDifference(to, imgIn.getRGB(x1 + 1, y1)) : 0)
                 + (x1 > 0 ? colorRGBDifference(to, imgIn.getRGB(x1 - 1, y1)) : 0)
                 + (y1 < imgIn.getHeight() - 2 ? colorRGBDifference(to, imgIn.getRGB(x1, y1 + 1)) : 0)
                 + (y1 > 0 ? colorRGBDifference(to, imgIn.getRGB(x1, y1 - 1)) : 0)
                 + 5 * colorRGBDifference(to, from)) / 9;
-
     }
 
     /**
@@ -181,7 +179,6 @@ public class Seam_Carver {
                 pxlToRemoveindex[0] = x;
             }
         }
-
         for (int y = 1; y < minVarianceValue[0].length - 1; y++) {
             pxlToRemoveindex[y] = pxlToRemoveindex[y - 1];
             if (pxlToRemoveindex[y] > 0 && minVarianceValue[pxlToRemoveindex[y - 1] - 1][y] < minVarianceValue[pxlToRemoveindex[y - 1]][y]) {
@@ -235,7 +232,6 @@ public class Seam_Carver {
         for (int y = 0; y < minVarianceValue[0].length; y++) {
             int survivorIndex = 0;
             for (int x = 0; x < minVarianceValue.length - numPixelsToRemoveX - 1; x++) {
-
                 while (minVarianceValue[survivorIndex][y] == Integer.MAX_VALUE) {
                     survivorIndex++;
                 }
@@ -288,7 +284,6 @@ public class Seam_Carver {
      */
     public static BufferedImage rotate(BufferedImage image) throws IOException{
           BufferedImage rotatedImage =  new BufferedImage(image.getHeight(), image.getWidth(), image.getType());
-
           AffineTransform tx = new AffineTransform();
           tx.rotate(Math.PI / 2, rotatedImage.getWidth() / 2, image.getHeight() / 2);
           AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
@@ -307,7 +302,6 @@ public class Seam_Carver {
      */
     public static BufferedImage reverseRotation (BufferedImage img) throws IOException{
     	BufferedImage image = rotate(rotate(rotate(img)));
-
     	return image;
     }   
 }
