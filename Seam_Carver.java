@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
  * My idea was to calculate the energy of the image (heatmap) and look for seams (vertical)
  * with least energy and remove them. 
  * I rotate the image after the seams are gone and do the same thing again, thus rescaling the image in X and Y direction.
- * In the process 8 images are generated to check all steps. The resulting image is called Rescaled_IMAGE.jpg
+ * In the process 8 images are generated to check all steps. The resulting image is called image_rescaled.jpg
  * 
  * @author Viktor Gorte
  */
@@ -21,23 +21,28 @@ public class Seam_Carver {
     public static void main(String argc[]) throws IOException {
     	//FILL IN YOUR INFORMATIONS BEFORE STARTING
         //______________________________________________________________________________
-        //Image to be rescaled
+        //Please specify path of the (to be rescaled) image
         BufferedImage imgIn = ImageIO.read(new File("landscape.jpg"));
         //Number of Seams to remove in x direction
-        int numPixelsToRemoveX = 10;
+        int numPixelsToRemoveX = 50;
         //Number of Seams to remove in y direction
-        int numPixelsToRemoveY = 10;
-        //______________________________________________________________________________        
-        System.out.println("Start:");
-        System.out.println("Image: Height & Width : "+imgIn.getHeight()+" & "+imgIn.getWidth() );
+        int numPixelsToRemoveY = 50;
+        //______________________________________________________________________________     
+        
+        System.out.println("Starting ...");
+        System.out.println("---------------------------------------------------------");
+        System.out.println("Image: "+imgIn.getWidth()+" x "+imgIn.getHeight()+" pixels before seam carving.");
+        System.out.println("---------------------------------------------------------");
         BufferedImage imgRescaled = verticalSeamCarving(imgIn, numPixelsToRemoveX, "X");
         System.out.println("Rotating 90°");
         BufferedImage rotatedImage = rotate(imgRescaled);
         imgRescaled = verticalSeamCarving(rotatedImage, numPixelsToRemoveY, "Y");
         BufferedImage rescaledImage = reverseRotation(imgRescaled);
-        ImageIO.write(rescaledImage, "JPEG", new File("Rescaled_IMAGE.jpg"));       
-        System.out.println("Rescaled image: Height & Width : "+rescaledImage.getHeight()+" & "+rescaledImage.getWidth());
-        System.out.println("Done!");
+        ImageIO.write(rescaledImage, "JPEG", new File("image_rescaled.jpg")); 
+        System.out.println("---------------------------------------------------------");
+        System.out.println("Rescaled image: "+ rescaledImage.getWidth()+ " x "+rescaledImage.getHeight() + " pixels." );
+        System.out.println("---------------------------------------------------------");
+        System.out.println("Finished!");
     }
     
     /**
@@ -55,11 +60,12 @@ public class Seam_Carver {
      * @throws IOException
      */
     public static BufferedImage verticalSeamCarving(BufferedImage image, int seams, String direction) throws IOException{
-    	System.out.println("Starting seam_carving");
+    	System.out.println("Starting seam carving in "+ direction +" direction:");
     	  int[][] minVarianceValue = getMinVarianceMatrix(image);
-          System.out.println("creating HEATMAP!!");
+          System.out.println("Creating HEATMAP!!");
           BufferedImage imgVariance = getColorScaleVarianceMatrix(minVarianceValue);
           ImageIO.write(imgVariance, "JPEG", new File("heatmap"+direction+".jpg"));
+          System.out.println("Finding best seams ...");
           markBestPaths(minVarianceValue, seams);
           BufferedImage imgPaths = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
           for (int x = 0; x < minVarianceValue.length; x++) {
@@ -71,11 +77,10 @@ public class Seam_Carver {
                   }
               }
           }
-          System.out.println("Creating image with seams");
-          ImageIO.write(imgPaths, "JPEG", new File("paths_to_remove"+direction+".jpg"));
+          ImageIO.write(imgPaths, "JPEG", new File("seams_to_remove"+direction+".jpg"));
           BufferedImage imgResc = rescaleImage(image, seams);
-          System.out.println("Rescaling image in " + direction+ " direction");
-          ImageIO.write(imgResc, "JPEG", new File("rescaled_image_"+direction+".jpg"));
+          System.out.println("Removing seams in " + direction+ " direction");
+          ImageIO.write(imgResc, "JPEG", new File("image_without_"+direction+"_seams.jpg"));
           
           return imgResc;
     }
@@ -284,7 +289,6 @@ public class Seam_Carver {
           tx.rotate(Math.PI / 2, rotatedImage.getWidth() / 2, image.getHeight() / 2);
           AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
           op.filter(image, rotatedImage);
-          ImageIO.write(rotatedImage, "JPEG", new File("rotatedImage.jpg"));
                     
           return rotatedImage;
     }
@@ -298,7 +302,7 @@ public class Seam_Carver {
      */
     public static BufferedImage reverseRotation (BufferedImage img) throws IOException{
     	BufferedImage image = rotate(rotate(rotate(img)));
-    	System.out.println("Reversing rotation of image");
+    	System.out.println("Reversing rotation of rescaled image");
     	return image;
     }   
 }
