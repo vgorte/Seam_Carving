@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 /**
  * Implementation of seam carving algorithm 
  * (see https://en.wikipedia.org/wiki/Seam_carving) in pure Java.
- * Given an image, the programm reduces its width and height, keeping as many important pixels as possible (according to energy-function).
+ * Given an image, the programm reduces its width and height, keeping as many important pixels as possible (according to pixel cost).
  * My idea was to calculate the energymap of the image (heatmap) and look for seams (vertical) with least energy and remove them. 
  * I rotate the image after the seams are removed and do the same thing again, thus rescaling the image in X and Y direction.
  * In the process 8 images are generated to check all stages of the process. 
